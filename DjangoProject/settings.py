@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'DjangoProject.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
+"""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -93,7 +93,19 @@ DATABASES = {
         'PORT': '3306',  # Puerto de MySQL en Workbench
     }
 }
+"""
+# DjangoProject/settings.py
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'railway',
+        'USER': 'root',
+        'PASSWORD': 'eYqcrWkhIteoVoToPEqvHHExFpxdsJVL',
+        'HOST': 'mysql.railway.internal',
+        'PORT': '3306',
+    }
+}
 
 
 
