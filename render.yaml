@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: irongym-backend
+    name: ApiRaul
     env: python
     buildCommand: ""
-    startCommand: gunicorn irongym.wsgi:application
+    startCommand: gunicorn DjangoProject.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
-        value: irongym.settings
+        value: DjangoProject.settings
