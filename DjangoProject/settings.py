@@ -102,7 +102,7 @@ DATABASES = {
         'NAME': 'railway',
         'USER': 'root',
         'PASSWORD': 'eYqcrWkhIteoVoToPEqvHHExFpxdsJVL',
-        'HOST': 'mysql.railway.internal',
+        'HOST': 'mysql://root:eYqcrWkhIteoVoToPEqvHHExFpxdsJVL@trolley.proxy.rlwy.net:45731/railway',
         'PORT': '3306',
     }
 }
