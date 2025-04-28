@@ -3,7 +3,8 @@ services:
     name: ApiRaul
     env: python
     buildCommand: ""
-    startCommand: gunicorn DjangoProject.wsgi:application
+    startCommand: |
+      python manage.py migrate && gunicorn DjangoProject.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: DjangoProject.settings
