@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: irongym-backend
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn irongym.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: irongym.settings
