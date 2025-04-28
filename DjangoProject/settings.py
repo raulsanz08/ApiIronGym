@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-dcnzjtn&fwi!qk9451c#z2tdd_*&(_kgr+9z!8u#y)_-mujyv4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ["*"]  # Permitir acceso desde cualquier dispositivo
 
@@ -99,11 +99,11 @@ DATABASES = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'railway',
-        'USER': 'root',
-        'PASSWORD': 'eYqcrWkhIteoVoToPEqvHHExFpxdsJVL',
-        'HOST': 'mysql://root:eYqcrWkhIteoVoToPEqvHHExFpxdsJVL@trolley.proxy.rlwy.net:45731/railway',
-        'PORT': '3306',
+        'NAME': os.getenv('MYSQLDATABASE'),
+        'USER': os.getenv('MYSQLUSER'),
+        'PASSWORD': os.getenv('MYSQLPASSWORD'),
+        'HOST': os.getenv('MYSQLHOST'),
+        'PORT': os.getenv('MYSQLPORT'),
     }
 }
 
