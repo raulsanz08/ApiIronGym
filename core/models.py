@@ -12,7 +12,6 @@ class Rutina(models.Model):
 
     class Meta:
         db_table = 'rutinas'
-        managed = False # ← Esto le dice a Django que use esa tabla específica
 
 
 # Modelo de Dietas
@@ -26,7 +25,6 @@ class Dieta(models.Model):
 
     class Meta:
         db_table = 'dietas'
-        managed = False # ← Tabla manual en MySQL
 
 class DiaEntrenamiento(models.Model):
     rutina = models.ForeignKey(Rutina, on_delete=models.CASCADE, related_name="dias")
@@ -39,7 +37,6 @@ class DiaEntrenamiento(models.Model):
 
     class Meta:
         db_table = 'dias_entrenamiento'
-        managed = False  # 🔥 Esto le dice a Django que NO intente crear esta tabla
 
 class DiaDieta(models.Model):
     dieta = models.ForeignKey(Dieta, on_delete=models.CASCADE, related_name="dias")
@@ -52,7 +49,6 @@ class DiaDieta(models.Model):
 
     class Meta:
         db_table = 'dias_dieta'   # Nombre exacto de la tabla en MySQL
-        managed = False           # 🔥 Esto es lo que evita que Django intente crearla
 
 class EjercicioDia(models.Model):
     dia_entrenamiento = models.ForeignKey(DiaEntrenamiento, on_delete=models.CASCADE, related_name="ejercicios")
@@ -60,7 +56,6 @@ class EjercicioDia(models.Model):
     repeticiones = models.CharField(max_length=50)
 
     class Meta:
-        managed = False  # 👈 Django no intentará crear/modificar la tabla
         db_table = 'ejercicios_dia'
 
     def __str__(self):
@@ -74,7 +69,6 @@ class ComidaDia(models.Model):
 
     class Meta:
         db_table = 'comidas_dia'
-        managed = False  # 👈 Esto es importante
 
 class PerfilUsuario(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -85,7 +79,6 @@ class PerfilUsuario(models.Model):
 
     class Meta:
         db_table = 'perfil_usuario'
-        managed = False  # No gestionamos la creación ni migración de esta tabla
 
     def __str__(self):
         return f"{self.nombre} (Usuario ID: {self.usuario.id})"
@@ -102,7 +95,6 @@ class EstadisticasUsuario(models.Model):
 
     class Meta:
         db_table = 'estadisticas'  # <-- aquí estaba el problema
-        managed = False
 
 
 
@@ -114,7 +106,6 @@ class Notificacion(models.Model):
 
     class Meta:
         db_table = 'notificaciones'
-        managed = False
 
     def __str__(self):
         return f'Notificación para {self.usuario.username}: {self.descripcion[:20]}...'
@@ -130,7 +121,6 @@ class Desafio(models.Model):
 
     class Meta:
         db_table = 'desafios'
-        managed = False  # Evita que Django intente crear la tabla
 
     def __str__(self):
         return self.titulo
@@ -156,7 +146,6 @@ class Mensaje(models.Model):
 
     class Meta:
         db_table = 'mensaje'
-        managed = False  # Evita que Django intente crear la tabla
 
     def __str__(self):
         return f"{self.usuario.email} - {self.remitente}: {self.texto[:30]}..."
