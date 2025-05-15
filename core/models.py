@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Modelo de Rutinas
+
 class Rutina(models.Model):
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField()
@@ -14,7 +14,7 @@ class Rutina(models.Model):
         db_table = 'rutinas'
 
 
-# Modelo de Dietas
+
 class Dieta(models.Model):
     nombre = models.CharField(max_length=255)
     descripcion = models.TextField()
@@ -48,7 +48,7 @@ class DiaDieta(models.Model):
         return f"{self.dieta.nombre} - {self.dia}"
 
     class Meta:
-        db_table = 'dias_dieta'   # Nombre exacto de la tabla en MySQL
+        db_table = 'dias_dieta'
 
 class EjercicioDia(models.Model):
     dia_entrenamiento = models.ForeignKey(DiaEntrenamiento, on_delete=models.CASCADE, related_name="ejercicios")
@@ -94,7 +94,7 @@ class EstadisticasUsuario(models.Model):
     resistencia = models.IntegerField()
 
     class Meta:
-        db_table = 'estadisticas'  # <-- aquí estaba el problema
+        db_table = 'estadisticas'
 
 
 
@@ -126,13 +126,13 @@ class Desafio(models.Model):
         return self.titulo
 
 class Configuracion(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # Relación con el modelo de usuario
-    email = models.EmailField(max_length=255)  # Nuevo email
-    contrasena = models.CharField(max_length=255)  # Nueva contraseña (hashing recomendado)
-    notificaciones = models.BooleanField(default=True)  # Activación de notificaciones
-    idioma = models.CharField(max_length=50, default='es')  # Idioma (por defecto 'es' para español)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email = models.EmailField(max_length=255)
+    contrasena = models.CharField(max_length=255)
+    notificaciones = models.BooleanField(default=True)
+    idioma = models.CharField(max_length=50, default='es')
 
-    # Marca de tiempo para saber cuándo se actualizó la configuración
+
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -141,7 +141,7 @@ class Configuracion(models.Model):
 class Mensaje(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name="mensajes")
     texto = models.TextField()
-    remitente = models.CharField(max_length=20)  # "Tú" o "IronBot"
+    remitente = models.CharField(max_length=20)
     fecha = models.DateTimeField(auto_now_add=True)
 
     class Meta:

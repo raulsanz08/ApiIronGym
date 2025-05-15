@@ -14,8 +14,6 @@ from .models import (Rutina, Dieta, DiaEntrenamiento, DiaDieta, EjercicioDia, Co
 import json
 
 
-# --- AUTENTICACIÓN ---
-
 @csrf_exempt
 def register_user(request):
     if request.method == "POST":
@@ -33,12 +31,36 @@ def register_user(request):
             user = User.objects.create_user(username=email, email=email, password=password)
             user.save()
 
+            predeterminadas = [
+                "¡Bienvenido a IronGym!",
+                "Recuerda mantenerte hidratado ",
+                "Hoy es un gran día para superarte ",
+                "Explora las rutinas recomendadas para ti ",
+                "Configura tu perfil para un plan personalizado"
+            ]
+            Notificacion.objects.bulk_create([
+                Notificacion(usuario=user, descripcion=mensaje, activo=True)
+                for mensaje in predeterminadas
+            ])
+
+            EstadisticasUsuario.objects.create(
+                usuario=user,
+                ritmoCardiaco=70,
+                fuerza=10,
+                peso=70,
+                logros=0,
+                disciplina=10,
+                altura=170,
+                resistencia=15
+            )
+
             return JsonResponse({"success": True, "message": "Registro exitoso"})
 
         except Exception as e:
             return JsonResponse({"success": False, "message": f"Error: {str(e)}"}, status=500)
 
     return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
+
 
 
 @csrf_exempt
@@ -54,13 +76,12 @@ def login_user(request):
             if user is not None:
                 token, created = Token.objects.get_or_create(user=user)
 
-                # 🔥 CREAR NOTIFICACIONES PREDETERMINADAS si no tiene ninguna
-                from .models import Notificacion  # 👈 asegúrate de importar tu modelo arriba
+                from .models import Notificacion
 
                 if not Notificacion.objects.filter(usuario=user).exists():
                     Notificacion.objects.create(usuario=user, descripcion="¡Bienvenido a IronGym!", activo=True)
-                    Notificacion.objects.create(usuario=user, descripcion="Recuerda mantenerte hidratado 💧", activo=True)
-                    Notificacion.objects.create(usuario=user, descripcion="Hoy es un gran día para superarte 💪", activo=True)
+                    Notificacion.objects.create(usuario=user, descripcion="Recuerda mantenerte hidratado ", activo=True)
+                    Notificacion.objects.create(usuario=user, descripcion="Hoy es un gran día para superarte ", activo=True)
 
                 return JsonResponse({
                     "success": True,
@@ -75,8 +96,6 @@ def login_user(request):
 
     return JsonResponse({"success": False, "message": "Método no permitido"}, status=405)
 
-
-# --- RUTINAS Y DIETAS ---
 
 @api_view(['GET'])
 def obtener_rutinas(request):
@@ -126,7 +145,6 @@ def obtener_comidas_por_dia(request, dia_id):
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
 
-# --- PERFIL USUARIO ---
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -165,7 +183,6 @@ def actualizar_perfil_usuario(request):
         return JsonResponse({"success": False, "message": f"Error: {str(e)}"}, status=500)
 
 
-# --- ESTADÍSTICAS USUARIO ---
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -184,15 +201,13 @@ def obtener_estadisticas(request):
     except EstadisticasUsuario.DoesNotExist:
         return Response({"error": "No se encontraron estadísticas para este usuario."}, status=404)
 
-# --- NOTIFICACIONES ---
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def obtener_notificaciones(request):
     try:
-        print(f"Usuario autenticado: {request.user}")  # Para debug en consola
+        print(f"Usuario autenticado: {request.user}")
 
-        # Cambiado aquí: filtrar por objeto usuario
         notificaciones = Notificacion.objects.filter(usuario=request.user)
 
         notificaciones_data = [
@@ -236,7 +251,6 @@ def actualizar_notificacion(request, pk):
         return JsonResponse({"success": False, "message": f"Error: {str(e)}"}, status=500)
 
 
-# --- DESAFÍOS ---
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -250,7 +264,7 @@ def obtener_desafios(request):
                 'titulo': d.titulo,
                 'descripcion': d.descripcion,
                 'imagenUrl': d.imagen_url,
-                'activo': d.completado  # 🔥 AQUÍ ahora devolvemos bien si está completado
+                'activo': d.completado
             }
             for d in desafios
         ]
@@ -267,9 +281,6 @@ def actualizar_desafio(request, pk):
         data = json.loads(request.body)
         desafio = Desafio.objects.get(id=pk)
 
-        # Opcionalmente: puedes comprobar si el usuario tiene permiso para actualizar este desafío si quieres más seguridad
-        # if desafio.usuario.id != request.user.id:
-        #     return JsonResponse({"success": False, "message": "No tienes permiso para modificar este desafío"}, status=403)
 
         if "completado" in data:
             desafio.completado = data["completado"]
@@ -292,28 +303,28 @@ def actualizar_configuracion(request):
         user = request.user
         configuracion, created = Configuracion.objects.get_or_create(user=user)
 
-        # Actualizar email
+
         nuevo_email = data.get('email')
         if nuevo_email:
-            user.username = nuevo_email  # En este sistema username = email
+            user.username = nuevo_email
             user.email = nuevo_email
             user.save()
             configuracion.email = nuevo_email
 
-        # Actualizar contraseña
+
         nueva_contrasena = data.get('contrasena')
         if nueva_contrasena:
             user.password = make_password(nueva_contrasena)
             user.save()
             configuracion.contrasena = nueva_contrasena
 
-        # Activar o desactivar notificaciones
+
         notificaciones_activadas = data.get('notificaciones')
         if notificaciones_activadas is not None:
             configuracion.notificaciones = notificaciones_activadas
             Notificacion.objects.filter(usuario=user).update(activo=notificaciones_activadas)
 
-        # Cambiar idioma
+
         nuevo_idioma = data.get('idioma')
         if nuevo_idioma:
             configuracion.idioma = nuevo_idioma
