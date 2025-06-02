@@ -32,11 +32,32 @@ def register_user(request):
             user.save()
 
             predeterminadas = [
-                "¡Bienvenido a IronGym!",
-                "Recuerda mantenerte hidratado ",
-                "Hoy es un gran día para superarte ",
-                "Explora las rutinas recomendadas para ti ",
-                "Configura tu perfil para un plan personalizado"
+                "¡No olvides hidratarte bien durante el día!",
+                "Recuerda estirar antes y después de entrenar.",
+                "Te queda por consumir la cena",
+                "Entrenamiento del día: Piernas y glúteos.",
+                "Configura tu perfil para un plan personalizado",
+                "Tip: Evita entrenar con el estómago vacío.",
+                "Mantente hidratado!",
+                "Desafío de la semana: 10.000 pasos diarios.",
+                "Revisa tu progreso en la sección de estadísticas.",
+                "Nueva receta saludable disponible.",
+                "Recuerda registrar tu alimentación de hoy.",
+                "¡Sigue así, estás haciendo un gran trabajo!",
+                "¿Te has pesado esta semana? No olvides hacerlo.",
+                "Mantén la postura correcta durante tus ejercicios.",
+                "Nuevo artículo en nuestro blog: Cómo evitar lesiones.",
+                "¿Probaste la rutina de yoga que recomendamos?",
+                "Tiempo estimado de recuperación: 24 horas.",
+                "No te saltes el calentamiento.",
+                "¡Comparte tu progreso con tus amigos!",
+                "Descubre los beneficios de la proteína vegetal.",
+                "Recordatorio: Toma al menos 2 litros de agua.",
+                "Recuerda estirar antes y después de entrenar.",
+                "Tiempo estimado de recuperación: 24 horas.",
+                "Recuerda registrar tu alimentación de hoy."
+
+
             ]
             Notificacion.objects.bulk_create([
                 Notificacion(usuario=user, descripcion=mensaje, activo=True)
