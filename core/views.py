@@ -190,6 +190,7 @@ def obtener_perfil_usuario(request):
 def actualizar_perfil_usuario(request):
     try:
         data = json.loads(request.body)
+
         perfil, created = PerfilUsuario.objects.update_or_create(
             usuario_id=request.user.id,
             defaults={
@@ -199,10 +200,39 @@ def actualizar_perfil_usuario(request):
                 "avatar_url": data.get('avatar_url', "")
             }
         )
-        return JsonResponse({"success": True, "message": "Perfil actualizado correctamente", "creado": created})
+
+        estadisticas, _ = EstadisticasUsuario.objects.get_or_create(usuario=request.user)
+
+        peso = data.get('peso') or 0
+        altura = data.get('altura') or 0
+
+        estadisticas.peso = peso
+        estadisticas.altura = altura
+
+        # Calculamos fuerza y resistencia
+        fuerza = int(min((peso * 0.5 + altura * 0.3), 100))
+        estadisticas.fuerza = fuerza
+
+        resistencia_bruta = 100 - (peso * 0.3 + altura * 0.2)
+        resistencia = int(max(resistencia_bruta, 0))
+        estadisticas.resistencia = resistencia
+
+        ritmo_cardiaco = int(max(40, 120 - resistencia))
+        estadisticas.ritmoCardiaco = ritmo_cardiaco
+
+        estadisticas.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": "Perfil y estadísticas actualizados correctamente",
+            "creado": created,
+            "fuerza": fuerza,
+            "resistencia": resistencia,
+            "ritmoCardiaco": ritmo_cardiaco
+        })
+
     except Exception as e:
         return JsonResponse({"success": False, "message": f"Error: {str(e)}"}, status=500)
-
 
 
 @api_view(['GET'])
@@ -302,18 +332,34 @@ def actualizar_desafio(request, pk):
         data = json.loads(request.body)
         desafio = Desafio.objects.get(id=pk)
 
-
         if "completado" in data:
             desafio.completado = data["completado"]
 
         desafio.save()
 
-        return JsonResponse({"success": True, "message": "Desafío actualizado correctamente"})
+        total = Desafio.objects.count()
+        completados = Desafio.objects.filter(completado=True).count()
+
+        if total > 0:
+            progreso = int((completados / total) * 100)
+        else:
+            progreso = 0
+
+        estadisticas, _ = EstadisticasUsuario.objects.get_or_create(usuario=request.user)
+        estadisticas.logros = progreso
+        estadisticas.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": "Desafío actualizado correctamente",
+            "logros_actualizados": progreso
+        })
 
     except Desafio.DoesNotExist:
         return JsonResponse({"success": False, "message": "Desafío no encontrado"}, status=404)
     except Exception as e:
         return JsonResponse({"success": False, "message": f"Error: {str(e)}"}, status=500)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

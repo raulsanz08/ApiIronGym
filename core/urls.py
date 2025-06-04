@@ -26,7 +26,6 @@ urlpatterns = [
 
     path('api/estadisticas/', obtener_estadisticas, name='obtener_estadisticas_usuario'),
 
-
     path('api/notificaciones/', obtener_notificaciones, name='obtener_notificaciones'),  # GET
     path('api/notificaciones/<int:pk>/update/', actualizar_notificacion, name='actualizar_notificacion'),  # PUT
 

@@ -1,20 +1,20 @@
-version: '3'
+version: '3.8'
 
 services:
   db:
+    container_name: iron_gym_db
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_DATABASE: iron_gym
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: IronGym
     ports:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
 
   web:
+    container_name: iron_gym_web
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
